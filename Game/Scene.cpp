@@ -102,12 +102,6 @@ void Scene::Initialize()
 
 	// シェーダー、バッファの作成
 	this->CreateShaderAndBuffer();
-	// ブレンドステートの作成
-	this->CreateBlendState();
-	// 深度ステンシルステートの作成
-	this->CreateDepthStencilState();
-	// ラスタライザーステートの作成
-	this->CreateRasterizerState();
 }
 
 /// <summary>
@@ -128,8 +122,8 @@ void Scene::Update(const float& elapsedTime)
 /// </summary>
 void Scene::Render()
 {
-	static bool chackBoxB = false;
-	static bool chackBoxN = false;
+	static bool chackBoxB = true;
+	static bool chackBoxN = true;
 
 	// ImGui ウィンドウ内に以下を追加
 	if (ImGui::Begin("PBR Material Editor")) {
@@ -150,8 +144,8 @@ void Scene::Render()
 	}
 	ImGui::End();
 
-	m_pbrConstantBuffer.useBaseMap = static_cast<int>(chackBoxB);
-	m_pbrConstantBuffer.useNormalMap = static_cast<int>(chackBoxN);
+	m_pbrConstantBuffer.useBaseMap   = static_cast<float>(chackBoxB);
+	m_pbrConstantBuffer.useNormalMap = static_cast<float>(chackBoxN);
 
 
 	m_PBRLitConstantBuffer->Update(m_context, m_pbrConstantBuffer);
@@ -243,60 +237,4 @@ void Scene::CreateShaderAndBuffer()
 		m_device->CreatePixelShader(blob.data(), blob.size(), nullptr, m_pixelShader.ReleaseAndGetAddressOf())
 	);
 
-}
-
-
-/// <summary>
-/// ブレンドステートの作成
-/// </summary>
-void Scene::CreateBlendState()
-{
-	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = FALSE;  // カバレッジをアルファに基づいて有効化する
-	blendDesc.IndependentBlendEnable = FALSE; // 複数のレンダーターゲットを独立して設定する
-
-	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
-	rtBlendDesc.BlendEnable = TRUE;              // ブレンドを有効化
-	rtBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;        // ソースのアルファ
-	rtBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;    // 逆アルファ
-	rtBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;           // 加算ブレンド
-	rtBlendDesc.SrcBlendAlpha = D3D11_BLEND_ONE;              // アルファ値のソース
-	rtBlendDesc.DestBlendAlpha = D3D11_BLEND_ZERO;             // アルファ値のデスティネーション
-	rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;           // アルファ値の加算
-	rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; // RGBA全てを有効
-
-	blendDesc.RenderTarget[0] = rtBlendDesc;
-
-	// ブレンドステートを作成
-	m_device->CreateBlendState(&blendDesc, &m_blendState);
-}
-
-/// <summary>
-/// 深度ステンシルステートの作成
-/// </summary>
-void Scene::CreateDepthStencilState()
-{
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-	depthStencilDesc.DepthEnable = TRUE;                          // 深度テストを有効化
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL; // 深度バッファの書き込みを有効化
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;      // 深度テスト条件 (小さい場合のみ描画)
-	depthStencilDesc.StencilEnable = FALSE;                       // ステンシルテストを無効化
-
-	// 深度ステンシルステートを作成
-	m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
-}
-
-/// <summary>
-/// ラスタライザーステートの作成
-/// </summary>
-void Scene::CreateRasterizerState()
-{
-	D3D11_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;      // 塗りつぶし (または D3D11_FILL_WIREFRAME)D3D11_FILL_SOLID
-	rasterDesc.CullMode = D3D11_CULL_NONE; // カリングなし (または D3D11_CULL_FRONT / D3D11_CULL_BACK)
-	rasterDesc.FrontCounterClockwise = FALSE;    // 時計回りの頂点順序を表面として認識
-	rasterDesc.DepthClipEnable = TRUE;           // 深度クリッピングを有効化
-
-	// ラスタライザーステートの作成
-	m_device->CreateRasterizerState(&rasterDesc, &m_rasterizerState);
 }

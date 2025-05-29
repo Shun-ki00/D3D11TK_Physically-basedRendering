@@ -48,14 +48,6 @@ private:
 
 	// シェーダー、バッファの作成
 	void CreateShaderAndBuffer();
-	// ブレンドステートの作成
-	void CreateBlendState();
-	// 深度ステンシルステートの作成
-	void CreateDepthStencilState();
-	// ラスタライザーステートの作成
-	void CreateRasterizerState();
-
-
 
 private:
 
@@ -90,14 +82,6 @@ private:
 	std::unique_ptr<ConstantBuffer<PBRLitConstantBuffer>> m_PBRLitConstantBuffer;
 	// 環境ライト
 	std::unique_ptr<ConstantBuffer<AmbientLightParameters>> m_ambientLightParameters;
-
-	
-	// ブレンドステート
-	Microsoft::WRL::ComPtr<ID3D11BlendState> m_blendState;
-	// 深度ステンシルステート
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
-	// ラスタライザーステート
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
 
 	// ベーステクスチャ
