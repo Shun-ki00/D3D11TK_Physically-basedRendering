@@ -10,7 +10,7 @@ class Scene
 {
 private:
 
-
+	// PBR定数バッファ
 	struct PBRLitConstantBuffer
 	{
 		DirectX::SimpleMath::Vector4 baseColor; // 基本色

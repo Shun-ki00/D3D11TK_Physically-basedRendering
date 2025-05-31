@@ -97,7 +97,7 @@ void Scene::Initialize()
 		m_device, L"Resources/Textures/woodNormal.png", nullptr, m_normalMap.ReleaseAndGetAddressOf());
 	// キューブマップ
 	DirectX::CreateDDSTextureFromFile(
-		m_device, L"Resources/Textures/DirectXTKCubeMap.dds", nullptr, m_cubeMap.ReleaseAndGetAddressOf());
+		m_device, L"Resources/Textures/cubemap.dds", nullptr, m_cubeMap.ReleaseAndGetAddressOf());
 
 
 	// シェーダー、バッファの作成
@@ -112,6 +112,7 @@ void Scene::Update(const float& elapsedTime)
 {
 	UNREFERENCED_PARAMETER(elapsedTime);
 
+	// カメラの更新処理
 	m_camera->Update();
 	m_commonResources->SetViewMatrix(m_camera->GetViewMatrix());
 
@@ -147,7 +148,7 @@ void Scene::Render()
 	m_pbrConstantBuffer.useBaseMap   = static_cast<float>(chackBoxB);
 	m_pbrConstantBuffer.useNormalMap = static_cast<float>(chackBoxN);
 
-
+	// 定数バッファの更新
 	m_PBRLitConstantBuffer->Update(m_context, m_pbrConstantBuffer);
 
 
