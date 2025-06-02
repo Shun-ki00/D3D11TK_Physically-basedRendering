@@ -24,7 +24,7 @@ namespace
     std::unique_ptr<Game> g_game;
 }
 // アプリケーション名を定義する
-LPCWSTR g_szAppName = L"Balloon";
+LPCWSTR g_szAppName = L"D3D11TK_Physically-basedRendering";
 // プロトタイプを宣言する
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void ExitGame() noexcept;
