@@ -10,13 +10,16 @@
 - PBR（Metallic-Roughness モデル）に基づいたライティング
 - Dear ImGui による GUI デバッグ表示対応
 
+## 動作環境
+・OS：Windows 10 / 11  
+・GPU : Direct3D 11対応グラフィックカード  
+・開発環境：Visual Studio 2022  
+・ビルド対象：x64  
+
 ## 使用ライブラリ
-
-| ライブラリ名 | 用途 |
-|--------------|------|
-| **DirectX 11** | グラフィックスAPI |
-| **DirectXTK**  | テクスチャ読み込み、スプライト/フォント描画、ユーティリティ |
-| **Dear ImGui** | GUI描画（デバッグ、ツール表示） |
-
+・Direct3D 11  
+・DirectXTK  
+・Windows SDK  
+・Dear ImGui  
 
 
