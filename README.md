@@ -1,5 +1,7 @@
 # D3D11TK_物理ベースレンダリング
 ![スクリーンショット 2025-06-02 120555](https://github.com/user-attachments/assets/9cad461c-66ee-4c29-8de9-1301663e1670)
+![スクリーンショット 2025-06-18 095648](https://github.com/user-attachments/assets/45f2c7f4-8ba9-4978-9703-f74a0e18fb71)
+
 ## 概要
 
 このプロジェクトは、**DirectX 11** 、**DirectXTK**を用いた、
