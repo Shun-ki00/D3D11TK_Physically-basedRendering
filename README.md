@@ -3,12 +3,10 @@
 ![スクリーンショット 2025-06-18 095648](https://github.com/user-attachments/assets/45f2c7f4-8ba9-4978-9703-f74a0e18fb71)
 
 ## 概要
-
 このプロジェクトは、**DirectX 11** 、**DirectXTK**を用いた、
 物理ベースレンダリング（PBR: Physically Based Rendering）のリアルタイム描画サンプルです。
 
 ## 特徴
-- DirectX 11 による高性能なレンダリングパイプライン
 - PBR（Metallic-Roughness モデル）に基づいたライティング
 - Dear ImGui による GUI デバッグ表示対応
 
@@ -23,5 +21,8 @@
 ・DirectXTK  
 ・Windows SDK  
 ・Dear ImGui  
+
+## 参考サイトURL
+[物理ベースレンダリング入門 その① - LIGHT11 - はてなブログ](https://light11.hatenadiary.com/entry/2020/03/02/204305)
 
 
