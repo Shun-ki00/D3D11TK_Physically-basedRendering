@@ -17,12 +17,9 @@ PS_Input main(VS_Input input)
     output.tangentWS = normalize(mul(float4(input.tangentOS.xyz, 0), World).xyz);
     // バイノーマル計算
     output.binormalWS = normalize(cross(output.normalWS, output.tangentWS));
-
         
     // テクスチャのUV座標
-    output.uv = input.uv;
-    //output.uv.y *= -1.0f;
-    
+    output.uv = input.uv;    
     // 頂点カラー
     output.color = input.color;
         

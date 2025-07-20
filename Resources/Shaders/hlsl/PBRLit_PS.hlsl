@@ -7,7 +7,6 @@ TextureCube<float4> cubeMap : register(t2);
 // シャドウマップテクスチャ
 Texture2D ShadowMapTexture : register(t3);
 
-
 // PI
 static const float F_PI = 3.1415926f;
 

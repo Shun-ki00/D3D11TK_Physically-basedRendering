@@ -46,6 +46,13 @@ public:
 
 private:
 
+	// モデルを描画する
+	void DrawModel(
+		DirectX::SimpleMath::Matrix world,
+		DirectX::SimpleMath::Matrix view,
+		DirectX::SimpleMath::Matrix projection
+	);
+
 	// シェーダー、バッファの作成
 	void CreateShaderAndBuffer();
 
@@ -82,7 +89,6 @@ private:
 	std::unique_ptr<ConstantBuffer<PBRLitConstantBuffer>> m_PBRLitConstantBuffer;
 	// 環境ライト
 	std::unique_ptr<ConstantBuffer<AmbientLightParameters>> m_ambientLightParameters;
-
 
 	// ベーステクスチャ
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_baseTexture;

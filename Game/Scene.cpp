@@ -14,6 +14,22 @@
 /// コンストラクタ
 /// </summary>
 Scene::Scene()
+	:
+	m_commonResources{},
+	m_camera{},
+	m_device{},
+	m_context{},
+	m_commonStates{},
+	m_pbrConstantBuffer{},
+	m_model{},
+	m_vertexShader{},
+	m_pixelShader{},
+	m_inputLayout{},
+	m_PBRLitConstantBuffer{},
+	m_ambientLightParameters{},
+	m_baseTexture{},
+	m_normalMap{},
+	m_cubeMap{}
 {
 	// インスタンスを取得する
 	m_commonResources = CommonResources::GetInstance();
@@ -31,30 +47,6 @@ void Scene::Initialize()
 	m_camera = std::make_unique<DebugCamera>();
 	m_camera->Initialize(1280, 720);
 
-	// 初期化処理
-	PBRLitConstantBuffer pbr{
-		DirectX::SimpleMath::Vector4::One,
-		1.0f,
-		0.0f,
-		1.0f,
-		1.0f
-	};
-
-	m_pbrConstantBuffer = pbr;
-
-	AmbientLightParameters ambient{
-		DirectX::SimpleMath::Vector3::One,
-		1.0f
-	};
-
-	// 定数バッファの作成
-	m_PBRLitConstantBuffer = std::make_unique<ConstantBuffer<PBRLitConstantBuffer>>();
-	m_PBRLitConstantBuffer->Initialize(m_device);
-	m_PBRLitConstantBuffer->Update(m_context,pbr);
-	m_ambientLightParameters = std::make_unique<ConstantBuffer<AmbientLightParameters>>();
-	m_ambientLightParameters->Initialize(m_device);
-	m_ambientLightParameters->Update(m_context, ambient);
-
 
 	// モデルをロードする　============================================
 
@@ -63,7 +55,7 @@ void Scene::Initialize()
 	// ディレクトリを設定する
 	effectFactory->SetDirectory(L"Resources/Model");
 	// モデルのロード
-	m_model = DirectX::Model::CreateFromCMO(m_device, L"Resources/Model/torus.cmo", *effectFactory);
+	m_model = DirectX::Model::CreateFromCMO(m_device, L"Resources/Model/WoodBox.cmo", *effectFactory);
 
 	// モデルのエフェクト情報を更新する
 	m_model->UpdateEffects([](DirectX::IEffect* effect) {
@@ -74,7 +66,7 @@ void Scene::Initialize()
 			// 拡散反射光
 			DirectX::SimpleMath::Color diffuseColor = DirectX::SimpleMath::Color(1.0f, 0.95f, 0.9f);
 			// ライトが照らす方向
-			DirectX::SimpleMath::Vector3 lightDirection(0.0f, 1.0f, 0.0f);
+			DirectX::SimpleMath::Vector3 lightDirection(0.5f, 0.5f, 0.0f);
 
 			basicEffect->SetLightEnabled(1, false);
 			basicEffect->SetLightEnabled(2, false);
@@ -91,10 +83,10 @@ void Scene::Initialize()
 
 	// ベーステクスチャ
 	DirectX::CreateWICTextureFromFile(
-	m_device, L"Resources/Textures/wood.png", nullptr, m_baseTexture.ReleaseAndGetAddressOf());
+	m_device, L"Resources/Textures/woodBox.png", nullptr, m_baseTexture.ReleaseAndGetAddressOf());
 	// ノーマルマップ
 	DirectX::CreateWICTextureFromFile(
-		m_device, L"Resources/Textures/woodNormal.png", nullptr, m_normalMap.ReleaseAndGetAddressOf());
+		m_device, L"Resources/Textures/woodBoxNormal.png", nullptr, m_normalMap.ReleaseAndGetAddressOf());
 	// キューブマップ
 	DirectX::CreateDDSTextureFromFile(
 		m_device, L"Resources/Textures/cubemap.dds", nullptr, m_cubeMap.ReleaseAndGetAddressOf());
@@ -126,7 +118,7 @@ void Scene::Render()
 	static bool chackBoxB = true;
 	static bool chackBoxN = true;
 
-	// ImGui ウィンドウ内に以下を追加
+	// ImGui ウィンドウ
 	if (ImGui::Begin("PBR Material Editor")) {
 		// Base Color（Vector4: RGBA）
 		ImGui::ColorEdit4("Base Color", reinterpret_cast<float*>(&m_pbrConstantBuffer.baseColor));
@@ -151,13 +143,38 @@ void Scene::Render()
 	// 定数バッファの更新
 	m_PBRLitConstantBuffer->Update(m_context, m_pbrConstantBuffer);
 
-
-	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateScale(2.0f);
+	DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::CreateScale(0.05f)*  DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3::Right * 1.0f );
 	DirectX::SimpleMath::Matrix view = m_camera->GetViewMatrix();
 	DirectX::SimpleMath::Matrix proj = m_commonResources->GetProjectionMatrix();
 
+	for (int z = 0; z < 10; z++)
+	{
+		for (int x = 0; x < 10; x++)
+		{
+			world = DirectX::SimpleMath::Matrix::CreateScale(0.01f)
+				* DirectX::SimpleMath::Matrix::CreateTranslation({-25.0f + (x * 6.0f) ,0.0f ,-25.0f + (z * 6.0f) });
+
+			// モデルを描画する
+			this->DrawModel(world, view, proj);
+		}
+	}
+
+}
+
+/// <summary>
+/// 終了処理
+/// </summary>
+void Scene::Finalize() {}
+
+
+void Scene::DrawModel(
+	DirectX::SimpleMath::Matrix world,
+	DirectX::SimpleMath::Matrix view,
+	DirectX::SimpleMath::Matrix projection
+)
+{
 	// モデル描画
-	m_model->Draw(m_context, *m_commonStates, world, view, proj, false, [&]
+	m_model->Draw(m_context, *m_commonStates, world, view, projection, false, [&]
 		{
 			// 定数バッファを指定する
 			ID3D11Buffer* cbuf[] = { m_ambientLightParameters->GetBuffer() };
@@ -204,11 +221,6 @@ void Scene::Render()
 	m_context->PSSetShaderResources(2, 1, nullsrv);
 }
 
-/// <summary>
-/// 終了処理
-/// </summary>
-void Scene::Finalize() {}
-
 
 /// <summary>
 /// シェーダー、バッファの作成
@@ -238,4 +250,29 @@ void Scene::CreateShaderAndBuffer()
 		m_device->CreatePixelShader(blob.data(), blob.size(), nullptr, m_pixelShader.ReleaseAndGetAddressOf())
 	);
 
+
+	// 初期化処理
+	PBRLitConstantBuffer pbr{
+		DirectX::SimpleMath::Vector4::One,
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f
+	};
+	m_pbrConstantBuffer = pbr;
+
+
+	AmbientLightParameters ambient{
+		DirectX::SimpleMath::Vector3::One,
+		1.0f
+	};
+
+	// 定数バッファの作成
+	m_PBRLitConstantBuffer = std::make_unique<ConstantBuffer<PBRLitConstantBuffer>>();
+	m_PBRLitConstantBuffer->Initialize(m_device);
+	m_PBRLitConstantBuffer->Update(m_context, pbr);
+
+	m_ambientLightParameters = std::make_unique<ConstantBuffer<AmbientLightParameters>>();
+	m_ambientLightParameters->Initialize(m_device);
+	m_ambientLightParameters->Update(m_context, ambient);
 }
